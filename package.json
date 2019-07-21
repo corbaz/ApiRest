@@ -1,0 +1,22 @@
+{
+  "name": "apirest",
+  "version": "1.0.0",
+  "description": "JCC Producciones",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corbaz/ApiRest.git"
+  },
+  "author": "julio.corbaz@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/corbaz/ApiRest/issues"
+  },
+  "homepage": "https://github.com/corbaz/ApiRest#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
