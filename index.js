@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.get('/api/product', (req, res) => {
     res.status(200).send({
         mensaje: 'Ruta GET product: OK',
-        products: []
+        products: [{marca: 'Puma', Precio: 500}]
     });
 });
 
