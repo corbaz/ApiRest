@@ -1,0 +1,92 @@
+'use strict';
+// npm install --save esm
+// nodemon -r esm index.js
+import express from 'express';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+import Product from './models/product';
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+// Hace consulta GET x Muestra todos los Productos
+app.get('/api/product', (req, res) => {
+    Product.find({}, (err, product) => {
+        if (err) return res.status(500).send({mensaje: `Error en peticion ${err}`});
+        if (!product) return res.status(404).send({mensaje: `El producto no existe ${product}`});
+        res.status(200).send({product: product});
+    })
+});
+
+// Hace consulta GET x Producto
+app.get('/api/product/:productId', (req, res) => {
+    let productId = req.params.productId;
+    Product.findById(productId, (err, product) => {
+        if (err) return res.status(500).send({mensaje: `Error en peticion ${err}`});
+        if (!product) return res.status(404).send({mensaje: `El producto no existe ${product}`});
+        res.status(200).send({product: product});
+    })
+});
+
+// Hace consulta POST
+app.post('/api/product', (req, res) => {
+    console.log('POST /api/product');
+    console.log(req.body);
+
+    let product = new Product();
+    product.name = req.body.name;
+    product.picture = req.body.picture;
+    product.price = req.body.price;
+    product.category = req.body.category;
+    product.description = req.body.description;
+
+    product.save((err, productStored) => {
+        if (err) {
+            return res.status(500).send({mensaje: `Error al grabar en la DB: ${err}`});
+        } else {
+            res.status(200).send({product: productStored});
+        }
+    });
+});
+
+// Hace actualizaciones PUT
+app.put('/api/product/:productId', (req, res) => {
+    let productId = req.params.productId;
+    let update_producto = req.body;
+
+    Product.findByIdAndUpdate(productId,update_producto ,(err, productUpdated) => {
+        if (err) return res.status(500).send({mensaje: `Error en peticion ${err}`});
+        res.status(200).send({product: productUpdated});
+    });
+});
+
+// Hace borrar DELETE
+app.delete('/api/product/:productId', (req, res) => {
+    let productId = req.params.productId;
+
+    Product.findById(productId, (err, product) => {
+        if (err) return res.status(500).send({mensaje: `Error en peticion ${err}`});
+
+        product.remove(err => {
+            if (!product) return res.status(404).send({mensaje: `El producto no existe ${product}`});
+            res.status(200).send({mensaje: `El producto ${product._id} ha sido borrado`});
+        })
+    })
+});
+
+//conezio a Mongodb
+mongoose.connect('mongodb://localhost:27017/shop', (err, resp) => {
+    if (err) {
+        return console.log(
+            `Conexion NO establecida a MongoDB: 
+             ERROR: ${err}`);
+    }
+    console.log('Conexion establecida a la Base de Datos');
+
+    app.listen(port, () => {
+        console.log(`Api REST port: ${port}`);
+    });
+});
